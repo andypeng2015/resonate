@@ -195,14 +195,11 @@ paths:
                   required:
                     - processId
                     - ttl
-                    - recv
                   properties:
                     processId:
                       type: string
                     ttl:
                       type: integer
-                    recv:
-                      type: object
       responses:
         200:
           description: Operation deduplicated, promise fetched successfully
@@ -224,97 +221,6 @@ paths:
                     $ref: "#/components/schemas/Promise"
                   task:
                     $ref: "#/components/schemas/Task"
-        400:
-          description: Invalid request
-        403:
-          description: Forbidden request
-        409:
-          description: Promise already exists
-
-  /promises/callback:
-    post:
-      tags:
-        - Promises
-      summary: Create promise and callback
-      operationId: createPromiseAndCallback
-      parameters:
-        - in: header
-          name: request-id
-          description: Unique tracking id
-          schema:
-            type: string
-        - in: header
-          name: idempotency-key
-          description: Deduplicates requests
-          schema:
-            type: string
-        - in: header
-          name: strict
-          description: If true, deduplicates only when promise state matches the request
-          schema:
-            type: boolean
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - promise
-                - callback
-              properties:
-                promise:
-                  type: object
-                  required:
-                    - id
-                    - timeout
-                  properties:
-                    id:
-                      type: string
-                    timeout:
-                      type: integer
-                      format: int64
-                    param:
-                      $ref: "#/components/schemas/Value"
-                    tags:
-                      type: object
-                      additionalProperties:
-                        type: string
-                callback:
-                  type: object
-                  required:
-                    - rootPromiseId
-                    - timeout
-                    - recv
-                  properties:
-                    rootPromiseId:
-                      type: string
-                    timeout:
-                      type: integer
-                      format: int64
-                    recv:
-                      $ref: "#/components/schemas/Recv"
-      responses:
-        200:
-          description: Operation deduplicated, promise fetched successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  promise:
-                    $ref: "#/components/schemas/Promise"
-        201:
-          description: Created
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  promise:
-                    $ref: "#/components/schemas/Promise"
-                  callback:
-                    $ref: "#/components/schemas/Callback"
         400:
           description: Invalid request
         403:
@@ -430,11 +336,14 @@ paths:
             schema:
               type: object
               required:
+                - id
                 - promiseId
                 - rootPromiseId
                 - timeout
                 - recv
               properties:
+                id:
+                  type: string
                 promiseId:
                   type: string
                 rootPromiseId:
